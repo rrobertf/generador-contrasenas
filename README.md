@@ -1,23 +1,16 @@
 # Generador de Contraseñas
 
-Script en Python que genera contraseñas seguras con opciones configurables de longitud, números y símbolos.
-
-## Uso
+CLI interactiva en Python 3.10+ sin dependencias externas.
 
 ```bash
-python generador.py
+python3 generador.py
+python3 -m unittest discover -s tests -v
 ```
 
-## Opciones
+Elige longitud (8–4096), números y símbolos. Usa `secrets` para aleatoriedad criptográfica y garantiza minúsculas, mayúsculas y cada categoría seleccionada. Una longitud inferior a 8 se ajusta a 8; las entradas no numéricas se vuelven a solicitar.
 
-- Longitud personalizable
-- Incluir o excluir números
-- Incluir o excluir símbolos especiales
+La contraseña se muestra en la terminal **sin guardarse automáticamente**. Esto elimina el historial en texto plano de versiones anteriores. Los archivos `contrasenas.txt` que ya tengas se conservan sin cambios y quedan ignorados por Git: tras trasladar tus claves a un gestor de contraseñas, decide cómo custodiar o eliminar ese historial. Evita grabar o compartir la terminal cuando muestre contraseñas.
 
-## Stack
+No incluye flags CLI, cálculo de entropía, generación por lotes ni portapapeles.
 
-![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
-
-## Autor
-
-**Roberto Feliciano** — [github.com/rrobertf](https://github.com/rrobertf)
+**Roberto Feliciano** — [GitHub](https://github.com/rrobertf)
