@@ -1,43 +1,47 @@
-import random
+"""Generador interactivo: muestra la contraseña sin guardarla en disco."""
+import secrets
 import string
-import datetime
 
-# ── 1. Definir los caracteres disponibles ──
-letras = string.ascii_letters      # a-z y A-Z
-numeros = string.digits            # 0-9
-simbolos = string.punctuation      # !@#$%^&*...
 
-# ── 2. Preguntar al usuario ──
-print("=== Generador de Contraseñas Seguras ===\n")
+def generar_contrasena(longitud: int, usar_numeros: bool = True,
+                       usar_simbolos: bool = True) -> str:
+    if isinstance(longitud, bool) or not isinstance(longitud, int) or not 8 <= longitud <= 4096:
+        raise ValueError('La longitud debe estar entre 8 y 4096.')
+    grupos = [string.ascii_lowercase, string.ascii_uppercase]
+    if usar_numeros:
+        grupos.append(string.digits)
+    if usar_simbolos:
+        grupos.append(string.punctuation)
+    pool = ''.join(grupos)
+    # Rejection sampling keeps the distribution uniform over valid passwords.
+    while True:
+        contrasena = ''.join(secrets.choice(pool) for _ in range(longitud))
+        if all(any(c in grupo for c in contrasena) for grupo in grupos):
+            return contrasena
 
-longitud = int(input("¿Qué tan larga quieres la contraseña? (mínimo 8): "))
 
-if longitud < 8:
-    print("Muy corta. Se usará 8 como mínimo.")
-    longitud = 8
+def main() -> None:
+    print('=== Generador de Contraseñas Seguras ===\n')
+    try:
+        while True:
+            try:
+                longitud = int(input('¿Qué tan larga quieres la contraseña? (8–4096): '))
+            except ValueError:
+                print('Ingresa un número entero.')
+                continue
+            if longitud < 8:
+                print('Muy corta. Se usará 8 como mínimo.')
+                longitud = 8
+            if longitud <= 4096:
+                break
+            print('El máximo es 4096.')
+        usar_numeros = input('¿Incluir números? (s/n): ').strip().lower() == 's'
+        usar_simbolos = input('¿Incluir símbolos? (s/n): ').strip().lower() == 's'
+        print(f'\nTu contraseña: {generar_contrasena(longitud, usar_numeros, usar_simbolos)}')
+        print('No se guardó en disco. Guárdala en tu gestor de contraseñas.')
+    except (EOFError, KeyboardInterrupt):
+        print('\nCancelado.')
 
-usar_numeros = input("¿Incluir números? (s/n): ").lower() == 's'
-usar_simbolos = input("¿Incluir símbolos? (s/n): ").lower() == 's'
 
-# ── 3. Construir el pool de caracteres ──
-pool = letras
-
-if usar_numeros:
-    pool += numeros
-
-if usar_simbolos:
-    pool += simbolos
-
-# ── 4. Generar la contraseña ──
-contrasena = ''.join(random.choice(pool) for _ in range(longitud))
-
-# ── 5. Mostrar resultado ──
-print(f"\nTu contraseña: {contrasena}")
-
-# ── 6. Guardar en archivo ──
-fecha = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-with open("contrasenas.txt", "a") as archivo:
-    archivo.write(f"{fecha} | Longitud: {longitud} | {contrasena}\n")
-
-print("✓ Guardada en contrasenas.txt")
+if __name__ == '__main__':
+    main()
